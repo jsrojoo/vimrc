@@ -1,3 +1,5 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -19,6 +21,13 @@ Plugin 'roxma/vim-hug-neovim-rpc'
 Plugin 'Shougo/denite.nvim'
 Plugin 'joshdick/onedark.vim'
 Plugin 'mhinz/vim-signify'
+" Plugin 'Shougo/deoplete.nvim'
+Plugin 'pangloss/vim-javascript'
+" Track the engine.
+Plugin 'SirVer/ultisnips'
+" Snippets are separated from the engine. Add this if you want them:
+" Plugin 'honza/vim-snippets'
+
 
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
