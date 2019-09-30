@@ -9,8 +9,9 @@ autocmd FileType javascript setlocal shiftwidth=2 tabstop=2
 set smarttab
 set cindent
 
-colorscheme onedark
+set omnifunc=syntaxcomplete#Complete
 syntax on
+colorscheme onedark
 set background=dark
 let g:airline_theme='bubblegum' 
 set number
@@ -35,6 +36,24 @@ augroup javascript_folding
     au FileType javascript setlocal foldmethod=syntax
 augroup END
 
+let g:jsx_ext_required = 0
+let g:ale_linters = {
+\   'javascript': ['eslint'],
+\}
+let g:ale_fixers = {
+\   'javascript': ['prettier', 'eslint'],
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\}
+
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '⚠'
+highlight ALEErrorSign ctermbg=NONE ctermfg=red
+highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
+nnoremap <leader>af :ALEFix<cr>
+"Move between linting errors
+nnoremap ]r :ALENextWrap<CR>
+nnoremap [r :ALEPreviousWrap<CR>
+
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
@@ -42,3 +61,11 @@ let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 let g:UltiSnipsSnippetDirectories = ['UltiSnips', 'custom-snippets']
+
+" FORMATTERS
+au FileType javascript setlocal formatprg=prettier\ --single-quote
+au FileType html setlocal formatprg=js-beautify\ --type\ html
+au FileType scss setlocal formatprg=prettier\ --parser\ css
+au FileType css setlocal formatprg=prettier\ --parser\ css
+
+vnoremap <leader>f gq
