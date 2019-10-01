@@ -1,11 +1,12 @@
 autocmd! bufwritepost $MYVIMRC source $MYVIMRC
 
-source $HOME/.vim/vundle.vim
+source $HOME/.vim/vim-plug.vim
 source $HOME/.vim/cursor.vim
 source $HOME/.vim/smooth-scroll.vim
 source $HOME/.vim/finder.vim
 
 autocmd FileType javascript setlocal shiftwidth=2 tabstop=2
+autocmd FileType json setlocal shiftwidth=2 tabstop=2
 set smarttab
 set cindent
 
@@ -15,8 +16,9 @@ colorscheme onedark
 set background=dark
 let g:airline_theme='bubblegum' 
 set number
-
+set nohlsearch
 set showcmd
+set expandtab
 
 " Yank and paste with the system clipboard
 set clipboard=unnamed
@@ -28,8 +30,6 @@ set signcolumn=yes
 " === Signify === "
 let g:signify_realtime = 1
 let g:signify_sign_delete = '-'
-
-let g:deoplete#enable_at_startup = 1
 
 augroup javascript_folding
     au!
@@ -55,7 +55,7 @@ nnoremap ]r :ALENextWrap<CR>
 nnoremap [r :ALEPreviousWrap<CR>
 
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<tab>"
+" let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 " If you want :UltiSnipsEdit to split your window.
@@ -63,9 +63,104 @@ let g:UltiSnipsEditSplit="vertical"
 let g:UltiSnipsSnippetDirectories = ['UltiSnips', 'custom-snippets']
 
 " FORMATTERS
-au FileType javascript setlocal formatprg=prettier\ --single-quote
+au FileType javascript setlocal formatprg=prettier\ --single-quote\ --use-tabs=false
 au FileType html setlocal formatprg=js-beautify\ --type\ html
 au FileType scss setlocal formatprg=prettier\ --parser\ css
 au FileType css setlocal formatprg=prettier\ --parser\ css
 
 vnoremap <leader>f gq
+
+" let g:deoplete#enable_at_startup = 1
+" let g:deoplete#enable_ignore_case = 1
+" let g:deoplete#enable_smart_case = 1
+" let g:deoplete#enable_camel_case = 1
+" let g:deoplete#enable_refresh_always = 1
+" let g:deoplete#max_abbr_width = 0
+" let g:deoplete#max_menu_width = 0
+" let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
+let g:tern_request_timeout = 1
+let g:tern_request_timeout = 6000
+let g:tern#command = ['tern']
+let g:tern#arguments = [' — persistent']
+
+let g:NetrwIsOpen=0
+
+function! ToggleNetrw()
+    if g:NetrwIsOpen
+        let i = bufnr("$")
+        while (i >= 1)
+            if (getbufvar(i, "&filetype") == "netrw")
+                silent exe "bwipeout " . i 
+            endif
+            let i-=1
+        endwhile
+        let g:NetrwIsOpen=0
+    else
+        let g:NetrwIsOpen=1
+        silent Lexplore
+    endif
+endfunction
+
+" Add your own mapping. For example:
+noremap <silent> <C-p> :call ToggleNetrw()<CR>
+
+" inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+"
+" inoremap <silent><expr> <TAB>
+"       \ pumvisible() ? coc#_select_confirm() :
+"       \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+"       \ <SID>check_back_space() ? "\<TAB>" :
+"       \ coc#refresh()
+"
+" function! s:check_back_space() abort
+"   let col = col('.') - 1
+"   return !col || getline('.')[col - 1]  =~# '\s'
+" endfunction
+"
+" let g:coc_snippet_next = '<tab>'
+"
+" " use <tab> for trigger completion and navigate to the next complete item
+" function! s:check_back_space() abort
+"   let col = col('.') - 1
+"   return !col || getline('.')[col - 1]  =~ '\s'
+" endfunction
+"
+" inoremap <silent><expr> <C-space>
+"       \ pumvisible() ? "\<C-n>" :
+"       \ <SID>check_back_space() ? "\<Tab>" :
+"       \ coc#refresh()
+" " use <c-space>for trigger completion
+" inoremap <silent><expr> <C-space> coc#refresh()
+"
+" inoremap <silent><expr> <C-space>
+"       \ pumvisible() ? coc#_select_confirm() :
+"       \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+"       \ <SID>check_back_space() ? "\<TAB>" :
+"       \ coc#refresh()
+"
+" function! s:check_back_space() abort
+"   let col = col('.') - 1
+"   return !col || getline('.')[col - 1]  =~# '\s'
+" endfunction
+"
+" let g:coc_snippet_next = '<C-space>'
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? coc#_select_confirm() :
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+let g:coc_snippet_next = '<tab>'
+
+inoremap <expr> <c-j> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <c-k> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+nnoremap zo zO
+nnoremap zc zC
+map Q @q
+nnoremap zf za
