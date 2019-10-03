@@ -23,18 +23,20 @@ set expandtab
 " Yank and paste with the system clipboard
 set clipboard=unnamed
 
-set updatetime=100
+" set updatetime=500
 
 set signcolumn=yes
 
 " === Signify === "
-let g:signify_realtime = 1
+" let g:signify_realtime = 1
 let g:signify_sign_delete = '-'
 
 augroup javascript_folding
     au!
     au FileType javascript setlocal foldmethod=syntax
 augroup END
+autocmd FileType * exe "normal zR"
+
 
 let g:jsx_ext_required = 0
 let g:ale_linters = {
@@ -54,14 +56,6 @@ nnoremap <leader>af :ALEFix<cr>
 nnoremap ]r :ALENextWrap<CR>
 nnoremap [r :ALEPreviousWrap<CR>
 
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-" let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<c-k>"
-" If you want :UltiSnipsEdit to split your window.
-let g:UltiSnipsEditSplit="vertical"
-let g:UltiSnipsSnippetDirectories = ['UltiSnips', 'custom-snippets']
-
 " FORMATTERS
 au FileType javascript setlocal formatprg=prettier\ --single-quote\ --use-tabs=false
 au FileType html setlocal formatprg=js-beautify\ --type\ html
@@ -70,14 +64,6 @@ au FileType css setlocal formatprg=prettier\ --parser\ css
 
 vnoremap <leader>f gq
 
-" let g:deoplete#enable_at_startup = 1
-" let g:deoplete#enable_ignore_case = 1
-" let g:deoplete#enable_smart_case = 1
-" let g:deoplete#enable_camel_case = 1
-" let g:deoplete#enable_refresh_always = 1
-" let g:deoplete#max_abbr_width = 0
-" let g:deoplete#max_menu_width = 0
-" let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
 let g:tern_request_timeout = 1
 let g:tern_request_timeout = 6000
 let g:tern#command = ['tern']
@@ -104,47 +90,25 @@ endfunction
 " Add your own mapping. For example:
 noremap <silent> <C-p> :call ToggleNetrw()<CR>
 
-" inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-"
-" inoremap <silent><expr> <TAB>
-"       \ pumvisible() ? coc#_select_confirm() :
-"       \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-"       \ <SID>check_back_space() ? "\<TAB>" :
-"       \ coc#refresh()
-"
-" function! s:check_back_space() abort
-"   let col = col('.') - 1
-"   return !col || getline('.')[col - 1]  =~# '\s'
-" endfunction
-"
-" let g:coc_snippet_next = '<tab>'
-"
-" " use <tab> for trigger completion and navigate to the next complete item
-" function! s:check_back_space() abort
-"   let col = col('.') - 1
-"   return !col || getline('.')[col - 1]  =~ '\s'
-" endfunction
-"
-" inoremap <silent><expr> <C-space>
-"       \ pumvisible() ? "\<C-n>" :
-"       \ <SID>check_back_space() ? "\<Tab>" :
-"       \ coc#refresh()
-" " use <c-space>for trigger completion
-" inoremap <silent><expr> <C-space> coc#refresh()
-"
-" inoremap <silent><expr> <C-space>
-"       \ pumvisible() ? coc#_select_confirm() :
-"       \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-"       \ <SID>check_back_space() ? "\<TAB>" :
-"       \ coc#refresh()
-"
-" function! s:check_back_space() abort
-"   let col = col('.') - 1
-"   return !col || getline('.')[col - 1]  =~# '\s'
-" endfunction
-"
-" let g:coc_snippet_next = '<C-space>'
+
+
+
+
+" Use <C-l> for trigger snippet expand.
+imap <C-l> <Plug>(coc-snippets-expand)
+
+" Use <C-j> for select text for visual placeholder of snippet.
+vmap <C-j> <Plug>(coc-snippets-select)
+
+" Use <C-j> for jump to next placeholder, it's default of coc.nvim
+let g:coc_snippet_next = '<c-j>'
+
+" Use <C-k> for jump to previous placeholder, it's default of coc.nvim
+let g:coc_snippet_prev = '<c-k>'
+
+" Use <C-j> for both expand and jump (make expand higher priority.)
+imap <C-j> <Plug>(coc-snippets-expand-jump)
+
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? coc#_select_confirm() :
       \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
@@ -158,13 +122,9 @@ endfunction
 
 let g:coc_snippet_next = '<tab>'
 
-inoremap <expr> <c-j> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <c-k> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-nnoremap zo zO
-nnoremap zc zC
+" inoremap <expr> <c-j> pumvisible() ? "\<C-n>" : "\<Tab>"
+" inoremap <expr> <c-k> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 map Q @q
-nnoremap zf za
-
 
 " With this function you can reuse the same terminal in neovim.
 " You can toggle the terminal and also send a command to the same terminal.
@@ -234,11 +194,34 @@ endfunction
 
 " With this maps you can now toggle the terminal
 nnoremap <silent> <F12> :call MonkeyTerminalToggle()<cr><C-w><S-j>:resize 20<cr>i
-tnoremap <F12> <C-\><C-n>:call MonkeyTerminalToggle()<cr>
+tnoremap <silent> <F12> <C-\><C-n>:call MonkeyTerminalToggle()<cr><Esc>
+
 tnoremap <Esc> <C-\><C-n>
+tnoremap <C-[> <C-\><C-n>
 " " This an example on how specify command with different types of files.
 "     augroup go
 "         autocmd!
 "         autocmd BufRead,BufNewFile *.go set filetype=go
 "         autocmd FileType go nnoremap <F5> :call MonkeyTerminalExec('go run ' . expand('%'))<cr>
 "     augroup END
+
+let g:gitgutter_max_signs = 150
+
+nnoremap <Space> <Nop>
+nnoremap <Space><Space> za
+" noremap <Leader>y "*y
+" noremap <Leader>p "*p
+" noremap <Leader>Y "+y
+" noremap <Leader>P "+p
+map <F5> <C-W>_<C-W><Bar>
+
+function! s:ToggleBlame()
+    if &l:filetype ==# 'fugitiveblame'
+        close
+    else
+        Gblame
+    endif
+endfunction
+
+nnoremap <leader>bb :call <SID>ToggleBlame()<CR>
+nnoremap ; :
