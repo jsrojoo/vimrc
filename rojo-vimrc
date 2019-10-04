@@ -9,6 +9,7 @@ autocmd FileType javascript setlocal shiftwidth=2 tabstop=2
 autocmd FileType json setlocal shiftwidth=2 tabstop=2
 set smarttab
 set cindent
+set shellcmdflag=-ic "let's make vim interactive
 
 set omnifunc=syntaxcomplete#Complete
 syntax on
@@ -122,8 +123,8 @@ endfunction
 
 let g:coc_snippet_next = '<tab>'
 
-" inoremap <expr> <c-j> pumvisible() ? "\<C-n>" : "\<Tab>"
-" inoremap <expr> <c-k> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <c-j> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <c-k> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 map Q @q
 
 " With this function you can reuse the same terminal in neovim.
@@ -196,8 +197,8 @@ endfunction
 nnoremap <silent> <F12> :call MonkeyTerminalToggle()<cr><C-w><S-j>:resize 20<cr>i
 tnoremap <silent> <F12> <C-\><C-n>:call MonkeyTerminalToggle()<cr><Esc>
 
-tnoremap <Esc> <C-\><C-n>
-tnoremap <C-[> <C-\><C-n>
+tnoremap <C-Space> <C-\><C-n>
+" tnoremap <C-[> <C-\><C-n>
 " " This an example on how specify command with different types of files.
 "     augroup go
 "         autocmd!
@@ -223,5 +224,8 @@ function! s:ToggleBlame()
     endif
 endfunction
 
-nnoremap <leader>bb :call <SID>ToggleBlame()<CR>
+nnoremap <leader>bb :call <SID>ToggleBlame()<CR>a
 nnoremap ; :
+
+" Get current path
+nmap <leader>cp :let @+=expand("%:p")<CR>
