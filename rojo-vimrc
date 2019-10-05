@@ -1,59 +1,14 @@
-autocmd! bufwritepost expand('%') source $MYVIMRC
 
 source $HOME/.vim/vim-plug.vim
-source $HOME/.vim/cursor.vim
-source $HOME/.vim/smooth-scroll.vim
-source $HOME/.vim/finder.vim
-source $HOME/.vim/tree.vim
 
-autocmd FileType javascript setlocal shiftwidth=2 tabstop=2
-autocmd FileType json setlocal shiftwidth=2 tabstop=2
-set smarttab
-set cindent
-set shellcmdflag=-ic "let's make vim interactive
-
-set omnifunc=syntaxcomplete#Complete
-syntax on
-set t_Co=256   " This is may or may not needed.
-
-set background=dark
-" colorscheme PaperColor
-colorscheme onedark
-let g:airline_theme='bubblegum' 
-set number
-set nohlsearch
-set showcmd
-set expandtab
-
-" Yank and paste with the system clipboard
-set clipboard=unnamed
-
-" set updatetime=500
-
-set signcolumn=yes
+filetype plugin on
+filetype plugin indent on " Alternative: use the following to also enable language-dependent indenting.
 
 " === Signify === "
 let g:signify_realtime = 1
 let g:signify_sign_delete = '-'
 
-function! MyFoldText()
-    let nblines = v:foldend - v:foldstart + 1
-    let w = winwidth(0) - &foldcolumn - (&number ? 8 : 0)
-    let line = getline(v:foldstart + 1)
-    let comment = substitute(line, '/\*\|\*/\|{{{\d\=', '', 'g')
-    let expansionString = repeat(".", w - strwidth(nblines.comment.'"'))
-    let txt = '"' . comment . expansionString . nblines
-    return txt
-endfunction
-
-set foldtext=MyFoldText()
-augroup javascript_folding
-    au!
-    au FileType javascript setlocal foldmethod=syntax
-    au FileType json setlocal foldmethod=syntax
-augroup END
-autocmd FileType javascript exe "normal zR"
-
+" ALE settings
 let g:jsx_ext_required = 0
 let g:ale_linters = {
 \   'javascript': ['eslint'],
@@ -67,16 +22,16 @@ let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '⚠'
 highlight ALEErrorSign ctermbg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
+
 nnoremap <leader>af :ALEFix<cr>
 "Move between linting errors
 nnoremap ]r :ALENextWrap<CR>
 nnoremap [r :ALEPreviousWrap<CR>
 
 " FORMATTERS
-au FileType javascript setlocal formatprg=prettier\ --single-quote\ --use-tabs=false
-au FileType html setlocal formatprg=js-beautify\ --type\ html
-au FileType scss setlocal formatprg=prettier\ --parser\ css
-au FileType css setlocal formatprg=prettier\ --parser\ css
+" au FileType html setlocal formatprg=js-beautify\ --type\ html
+" au FileType scss setlocal formatprg=prettier\ --parser\ css
+" au FileType css setlocal formatprg=prettier\ --parser\ css
 
 " vnoremap <leader>f gq
 nmap <leader>f  <Plug>(coc-format-selected)
@@ -95,14 +50,13 @@ imap <C-j> <Plug>(coc-snippets-expand-jump)
 imap <C-l> <Plug>(coc-snippets-expand)
 
 " Use <C-j> for select text for visual placeholder of snippet.
-vmap <C-j> <Plug>(coc-snippets-select)
+vmap <leader><tab> <Plug>(coc-snippets-select)
 
 " Use <C-j> for jump to next placeholder, it's default of coc.nvim
 let g:coc_snippet_next = '<c-j>'
 
 " Use <C-k> for jump to previous placeholder, it's default of coc.nvim
 let g:coc_snippet_prev = '<c-k>'
-
 
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? coc#_select_confirm() :
@@ -121,85 +75,6 @@ inoremap <expr> <c-j> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <c-k> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 map Q @q
 
-" With this function you can reuse the same terminal in neovim.
-" You can toggle the terminal and also send a command to the same terminal.
-
-let s:monkey_terminal_window = -1
-let s:monkey_terminal_buffer = -1
-let s:monkey_terminal_job_id = -1
-
-function! MonkeyTerminalOpen()
-  " Check if buffer exists, if not create a window and a buffer
-  if !bufexists(s:monkey_terminal_buffer)
-    " Creates a window call monkey_terminal
-    new monkey_terminal
-    " Moves to the window the right the current one
-    wincmd L
-    let s:monkey_terminal_job_id = termopen($SHELL, { 'detach': 1 })
-
-     " Change the name of the buffer to "Terminal 1"
-     silent file Terminal\ 1
-     " Gets the id of the terminal window
-     let s:monkey_terminal_window = win_getid()
-     let s:monkey_terminal_buffer = bufnr('%')
-
-    " The buffer of the terminal won't appear in the list of the buffers
-    " when calling :buffers command
-    set nobuflisted
-  else
-    if !win_gotoid(s:monkey_terminal_window)
-    sp
-    " Moves to the window below the current one
-    wincmd L   
-    buffer Terminal\ 1
-     " Gets the id of the terminal window
-     let s:monkey_terminal_window = win_getid()
-    endif
-  endif
-endfunction
-
-function! MonkeyTerminalToggle()
-  if win_gotoid(s:monkey_terminal_window)
-    call MonkeyTerminalClose()
-  else
-    call MonkeyTerminalOpen()
-  endif
-endfunction
-
-function! MonkeyTerminalClose()
-  if win_gotoid(s:monkey_terminal_window)
-    " close the current window
-    hide
-  endif
-endfunction
-
-function! MonkeyTerminalExec(cmd)
-  if !win_gotoid(s:monkey_terminal_window)
-    call MonkeyTerminalOpen()
-  endif
-
-  " clear current input
-  call jobsend(s:monkey_terminal_job_id, "clear\n")
-
-  " run cmd
-  call jobsend(s:monkey_terminal_job_id, a:cmd . "\n")
-  normal! G
-  wincmd p
-endfunction
-
-" With this maps you can now toggle the terminal
-nnoremap <silent> <F12> :call MonkeyTerminalToggle()<cr><C-w><S-j>:resize 20<cr>i
-tnoremap <silent> <F12> <C-\><C-n>:call MonkeyTerminalToggle()<cr><Esc>
-
-tnoremap <Esc> <C-\><C-n>
-tnoremap <C-[> <C-\><C-n>
-" " This an example on how specify command with different types of files.
-"     augroup go
-"         autocmd!
-"         autocmd BufRead,BufNewFile *.go set filetype=go
-"         autocmd FileType go nnoremap <F5> :call MonkeyTerminalExec('go run ' . expand('%'))<cr>
-"     augroup END
-
 let g:gitgutter_max_signs = 150
 
 nnoremap <Space> <Nop>
@@ -208,17 +83,9 @@ nnoremap <Space><Space> za
 " noremap <Leader>p "*p
 " noremap <Leader>Y "+y
 " noremap <Leader>P "+p
+" Maximize window
 map <F5> <C-W>_<C-W><Bar>
 
-function! s:ToggleBlame()
-    if &l:filetype ==# 'fugitiveblame'
-        close
-    else
-        Gblame
-    endif
-endfunction
-
-nnoremap <leader>bb :call <SID>ToggleBlame()<CR>
 nnoremap ; :
 
 " Get current path
