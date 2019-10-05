@@ -1,6 +1,8 @@
 
 source $HOME/.vim/vim-plug.vim
 
+set norelativenumber
+
 filetype plugin on
 filetype plugin indent on " Alternative: use the following to also enable language-dependent indenting.
 
@@ -20,6 +22,7 @@ let g:ale_fixers = {
 
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '⚠'
+
 highlight ALEErrorSign ctermbg=NONE ctermfg=red
 highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
 
@@ -43,14 +46,14 @@ let g:tern_request_timeout = 6000
 let g:tern#command = ['tern']
 let g:tern#arguments = [' — persistent']
 
+" Use <C-j> for select text for visual placeholder of snippet.
+vmap <leader><tab> <Plug>(coc-snippets-select)
+
 " Use <C-j> for both expand and jump (make expand higher priority.)
 imap <C-j> <Plug>(coc-snippets-expand-jump)
 
 " Use <C-l> for trigger snippet expand.
 imap <C-l> <Plug>(coc-snippets-expand)
-
-" Use <C-j> for select text for visual placeholder of snippet.
-vmap <leader><tab> <Plug>(coc-snippets-select)
 
 " Use <C-j> for jump to next placeholder, it's default of coc.nvim
 let g:coc_snippet_next = '<c-j>'

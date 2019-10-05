@@ -6,7 +6,6 @@ set background=dark
 colorscheme onedark
 let g:airline_theme='bubblegum' 
 
-set norelativenumber
 set smarttab
 set cindent
 set shellcmdflag=-ic "let's make vim interactive
