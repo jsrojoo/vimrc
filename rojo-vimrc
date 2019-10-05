@@ -1,9 +1,10 @@
-autocmd! bufwritepost $MYVIMRC source $MYVIMRC
+autocmd! bufwritepost expand('%') source $MYVIMRC
 
 source $HOME/.vim/vim-plug.vim
 source $HOME/.vim/cursor.vim
 source $HOME/.vim/smooth-scroll.vim
 source $HOME/.vim/finder.vim
+source $HOME/.vim/tree.vim
 
 autocmd FileType javascript setlocal shiftwidth=2 tabstop=2
 autocmd FileType json setlocal shiftwidth=2 tabstop=2
@@ -13,8 +14,11 @@ set shellcmdflag=-ic "let's make vim interactive
 
 set omnifunc=syntaxcomplete#Complete
 syntax on
-colorscheme onedark
+set t_Co=256   " This is may or may not needed.
+
 set background=dark
+" colorscheme PaperColor
+colorscheme onedark
 let g:airline_theme='bubblegum' 
 set number
 set nohlsearch
@@ -29,15 +33,26 @@ set clipboard=unnamed
 set signcolumn=yes
 
 " === Signify === "
-" let g:signify_realtime = 1
+let g:signify_realtime = 1
 let g:signify_sign_delete = '-'
 
+function! MyFoldText()
+    let nblines = v:foldend - v:foldstart + 1
+    let w = winwidth(0) - &foldcolumn - (&number ? 8 : 0)
+    let line = getline(v:foldstart + 1)
+    let comment = substitute(line, '/\*\|\*/\|{{{\d\=', '', 'g')
+    let expansionString = repeat(".", w - strwidth(nblines.comment.'"'))
+    let txt = '"' . comment . expansionString . nblines
+    return txt
+endfunction
+
+set foldtext=MyFoldText()
 augroup javascript_folding
     au!
     au FileType javascript setlocal foldmethod=syntax
+    au FileType json setlocal foldmethod=syntax
 augroup END
-autocmd FileType * exe "normal zR"
-
+autocmd FileType javascript exe "normal zR"
 
 let g:jsx_ext_required = 0
 let g:ale_linters = {
@@ -63,37 +78,18 @@ au FileType html setlocal formatprg=js-beautify\ --type\ html
 au FileType scss setlocal formatprg=prettier\ --parser\ css
 au FileType css setlocal formatprg=prettier\ --parser\ css
 
-vnoremap <leader>f gq
+" vnoremap <leader>f gq
+nmap <leader>f  <Plug>(coc-format-selected)
+vmap <leader>f  <Plug>(coc-format-selected)
+xmap <leader>f  <Plug>(coc-format-selected)
 
 let g:tern_request_timeout = 1
 let g:tern_request_timeout = 6000
 let g:tern#command = ['tern']
 let g:tern#arguments = [' — persistent']
 
-let g:NetrwIsOpen=0
-
-function! ToggleNetrw()
-    if g:NetrwIsOpen
-        let i = bufnr("$")
-        while (i >= 1)
-            if (getbufvar(i, "&filetype") == "netrw")
-                silent exe "bwipeout " . i 
-            endif
-            let i-=1
-        endwhile
-        let g:NetrwIsOpen=0
-    else
-        let g:NetrwIsOpen=1
-        silent Lexplore
-    endif
-endfunction
-
-" Add your own mapping. For example:
-noremap <silent> <C-p> :call ToggleNetrw()<CR>
-
-
-
-
+" Use <C-j> for both expand and jump (make expand higher priority.)
+imap <C-j> <Plug>(coc-snippets-expand-jump)
 
 " Use <C-l> for trigger snippet expand.
 imap <C-l> <Plug>(coc-snippets-expand)
@@ -107,8 +103,6 @@ let g:coc_snippet_next = '<c-j>'
 " Use <C-k> for jump to previous placeholder, it's default of coc.nvim
 let g:coc_snippet_prev = '<c-k>'
 
-" Use <C-j> for both expand and jump (make expand higher priority.)
-imap <C-j> <Plug>(coc-snippets-expand-jump)
 
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? coc#_select_confirm() :
@@ -197,8 +191,8 @@ endfunction
 nnoremap <silent> <F12> :call MonkeyTerminalToggle()<cr><C-w><S-j>:resize 20<cr>i
 tnoremap <silent> <F12> <C-\><C-n>:call MonkeyTerminalToggle()<cr><Esc>
 
-tnoremap <C-Space> <C-\><C-n>
-" tnoremap <C-[> <C-\><C-n>
+tnoremap <Esc> <C-\><C-n>
+tnoremap <C-[> <C-\><C-n>
 " " This an example on how specify command with different types of files.
 "     augroup go
 "         autocmd!
@@ -224,8 +218,11 @@ function! s:ToggleBlame()
     endif
 endfunction
 
-nnoremap <leader>bb :call <SID>ToggleBlame()<CR>a
+nnoremap <leader>bb :call <SID>ToggleBlame()<CR>
 nnoremap ; :
 
 " Get current path
 nmap <leader>cp :let @+=expand("%:p")<CR>
+
+"Default diffsplit vertical
+set diffopt+=vertical

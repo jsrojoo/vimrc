@@ -2,7 +2,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'terryma/vim-expand-region'
 Plug 'tomtom/tcomment_vim'
-Plug 'prettier/vim-prettier'
+" Plug 'prettier/vim-prettier'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-surround'
@@ -21,5 +21,6 @@ Plug 'ternjs/tern_for_vim'
 Plug 'chrisbra/NrrwRgn'
 Plug 'tpope/vim-fugitive'
 Plug 'moll/vim-node'
+Plug 'NLKNguyen/papercolor-theme'
 
 call plug#end()
